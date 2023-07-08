@@ -1,24 +1,54 @@
-# File: trends_app.py
-
 import streamlit as st
-from pytrends.request import TrendReq
 import pandas as pd
+import altair as alt
+import openai
+from pytrends.request import TrendReq
 
-# title of the app
-st.title('Google Trends Visualizer')
+openai.api_key = "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"
 
-# user input
-keyword = st.text_input("Enter a keyword", '')
+def description(json):
+    chat_log = []
+    json = str(json)[:2000]
+    system = {"role": "system", "content": f"{json}"}
+    chat_log.append(system)
+    prompt = {"role": "user", "content": "This data is going to displayed on a streamlit app. Please return a 100 word description of this Google Trends data"}
+    chat_log.append(prompt)
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=chat_log,
+        temperature = .75,
+        )
+    message = response['choices'][0]['message']['content']
+    return message
 
-if keyword:
-    # create a pytrends object
+@st.cache_data
+def get_trends_data(keyword):
     pytrends = TrendReq(hl='en-US', tz=360)
-    
-    # build the payload
-    pytrends.build_payload([keyword], timeframe='today 1-m')
-    
-    # get Google Trends data
+    pytrends.build_payload([keyword], timeframe='today 5-y')
     df = pytrends.interest_over_time()
-    
-    # plot data
-    st.line_chart(df[keyword])
+    return df
+
+def plot_line_chart(df, keyword):
+    chart = alt.Chart(df).mark_line().encode(
+        x='date:T',
+        y=keyword,
+        tooltip=['date:T', keyword]
+    ).properties(
+        title=f'Google Trends data for {keyword}',
+        width=600
+    )
+    chart.encoding.x.title = 'Date'
+    chart.encoding.y.title = 'Trend Index'
+    return chart
+
+def main():
+    keyword = st.text_input("Enter a keyword", value="Bitcoin", max_chars=None, key=None, type='default')
+    df = get_trends_data(keyword)
+
+    gpt3_response = description(df[keyword].to_dict()).choices[0].text.strip()
+    st.text(gpt3_response)
+
+    st.altair_chart(plot_line_chart(df, keyword), use_container_width=True)
+
+if __name__ == "__main__":
+    main()
