@@ -4,3 +4,4 @@ pandas
 requests
 altair
 openai
+python-dotenv

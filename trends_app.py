@@ -2,8 +2,11 @@ import streamlit as st
 import pandas as pd
 import openai
 from pytrends.request import TrendReq
+import os
+from dotenv import load_dotenv
 
-openai.api_key = "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"
+
+openai.api_key = os.getenv('openai_api_key')
 
 def description(json, keyword):
     chat_log = []
