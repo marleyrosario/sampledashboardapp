@@ -25,16 +25,13 @@ RUN echo "\
 headless = true\n\
 enableCORS = false\n\
 enableXsrfProtection = false\n\
-port = 80\n\
-[browser]\n\
-gatherUsageStats = false\n\
+port = 8080\n\
 " > ~/.streamlit/config.toml
 
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 
-
-# Make port 80 available to the world outside this container
+# Make port 8080 available to the world outside this container
 EXPOSE 8080
 
 # Run trends_app.py when the container launches
-CMD ["streamlit", "run", "trends_app.py"]
+CMD ["streamlit", "run", "--server.address", "0.0.0.0", "trends_app.py"]
