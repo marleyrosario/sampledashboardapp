@@ -34,7 +34,7 @@ ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 
 
 # Make port 80 available to the world outside this container
-EXPOSE 80
+EXPOSE 8080
 
 # Run trends_app.py when the container launches
 CMD ["streamlit", "run", "trends_app.py"]
