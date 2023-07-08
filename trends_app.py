@@ -1,17 +1,16 @@
 import streamlit as st
 import pandas as pd
-import altair as alt
 import openai
 from pytrends.request import TrendReq
 
-openai.api_key = "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"
+openai.api_key = "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"
 
-def description(json):
+def description(json, keyword):
     chat_log = []
     json = str(json)[:2000]
     system = {"role": "system", "content": f"{json}"}
     chat_log.append(system)
-    prompt = {"role": "user", "content": "This data is going to displayed on a streamlit app. Please return a 100 word description of this Google Trends data"}
+    prompt = {"role": "user", "content": "This data is going to displayed on a streamlit app.  Please return a 100 word description of the results of this Google Trends data from this keyword: " + keyword + "."}
     chat_log.append(prompt)
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
@@ -28,27 +27,15 @@ def get_trends_data(keyword):
     df = pytrends.interest_over_time()
     return df
 
-def plot_line_chart(df, keyword):
-    chart = alt.Chart(df).mark_line().encode(
-        x='date:T',
-        y=keyword,
-        tooltip=['date:T', keyword]
-    ).properties(
-        title=f'Google Trends data for {keyword}',
-        width=600
-    )
-    chart.encoding.x.title = 'Date'
-    chart.encoding.y.title = 'Trend Index'
-    return chart
-
 def main():
-    keyword = st.text_input("Enter a keyword", value="Bitcoin", max_chars=None, key=None, type='default')
+    keyword = st.text_input("Enter a keyword", value="AI", max_chars=None, key=None, type='default')
     df = get_trends_data(keyword)
 
-    gpt3_response = description(df[keyword].to_dict()).choices[0].text.strip()
-    st.text(gpt3_response)
+    gpt3_response = description(df[keyword].to_dict(), keyword).strip()
 
-    st.altair_chart(plot_line_chart(df, keyword), use_container_width=True)
+    st.write(gpt3_response)
+
+    st.line_chart(df[keyword])
 
 if __name__ == "__main__":
     main()
