@@ -1,7 +1,3 @@
-pytrends
 streamlit
 pandas
 requests
-altair
-openai
-python-dotenv
