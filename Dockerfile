@@ -34,4 +34,4 @@ ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 EXPOSE $PORT
 
 # Run trends_app.py when the container launches
-ENTRYPOINT ["streamlit", "run", "--server.address", "0.0.0.0", "--server.port", "$PORT", "trends_app.py"]
+CMD streamlit run --server.address 0.0.0.0 --server.port $PORT trends_app.py
