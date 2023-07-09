@@ -31,7 +31,7 @@ port = 8080\n\
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 
 # Make port 8080 available to the world outside this container
-EXPOSE 8501
+EXPOSE $PORT
 
 # Run trends_app.py when the container launches
-ENTRYPOINT ["streamlit", "run", "--server.address", "0.0.0.0", "trends_app.py"]
+ENTRYPOINT ["streamlit", "run", "--server.address", "0.0.0.0", "--server.port", "$PORT", "trends_app.py"]
